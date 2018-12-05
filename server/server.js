@@ -55,6 +55,23 @@ app.get('/todos/:id', (req, res) => {
     });
 });
 
+// .remove({}) this will remove all documents
+// .findByIdAndRemove() will remove and return removed results. 
+app.delete('/todos/:id', (req, res) => {
+    let id = req.params.id;
+    if(!ObjectId.isValid(id)){
+       return res.status(404).send();
+    }
+    Todo.findByIdAndRemove(id).then((result) => {
+        if(!result){
+           return res.status(404).send();
+        }
+        res.status(200).send(result);
+    }).catch((err) => {
+        res.status(400).send();
+    });
+});
+
 app.listen(port, () => {
     console.log('server is up on ' + port);
 });
