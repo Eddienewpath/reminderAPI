@@ -5,7 +5,7 @@ let bodyparser = require('body-parser'); // bodyparser will send json to the api
 let {mongoose} = require('./db/mongoose');
 let {Todo} = require('./models/todo');
 let {User} = require('./models/user');
-const {ObjectId} = require('mongodb');
+const {ObjectID} = require('mongodb');
 const port = process.env.PORT || 3000;
 
 
@@ -41,7 +41,7 @@ app.get('/todos', (req, res) => {
 
 app.get('/todos/:id', (req, res) => {
     let id = req.params.id;
-    if(!ObjectId.isValid(id)){
+    if(!ObjectID.isValid(id)){
         return res.status(404).send();
     }
 
@@ -59,14 +59,14 @@ app.get('/todos/:id', (req, res) => {
 // .findByIdAndRemove() will remove and return removed results. 
 app.delete('/todos/:id', (req, res) => {
     let id = req.params.id;
-    if(!ObjectId.isValid(id)){
+    if(!ObjectID.isValid(id)){
        return res.status(404).send();
     }
-    Todo.findByIdAndRemove(id).then((result) => {
-        if(!result){
+    Todo.findByIdAndRemove(id).then((todo) => {
+        if(!todo){
            return res.status(404).send();
         }
-        res.status(200).send(result);
+        res.send({todo});
     }).catch((err) => {
         res.status(400).send();
     });
