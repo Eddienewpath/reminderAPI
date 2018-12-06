@@ -3,11 +3,12 @@ let express = require('express');
 let bodyparser = require('body-parser'); // bodyparser will send json to the api server
 const _ = require('lodash');
 // local import
+require('./config/config'); // load in different db for development and test
 let {mongoose} = require('./db/mongoose');
 let {Todo} = require('./models/todo');
 let {User} = require('./models/user');
 const {ObjectID} = require('mongodb');
-const port = process.env.PORT || 3000;
+const port = process.env.PORT;
 
 
 let app = express();
@@ -107,34 +108,7 @@ app.listen(port, () => {
 
 module.exports = {app};
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+/********************************* notes ******************************* */
 
 
 // console.log(Todo); 
