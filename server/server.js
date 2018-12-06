@@ -1,6 +1,7 @@
 //library import
 let express = require('express');
 let bodyparser = require('body-parser'); // bodyparser will send json to the api server
+const _ = require('lodash');
 // local import
 let {mongoose} = require('./db/mongoose');
 let {Todo} = require('./models/todo');
@@ -68,6 +69,33 @@ app.delete('/todos/:id', (req, res) => {
         }
         res.send({todo});
     }).catch((err) => {
+        res.status(400).send();
+    });
+});
+
+app.patch('/todos/:id', (req, res) => {
+    let id = req.params.id;
+    // limite user request update for given item using pick method
+    // only allow subset of things user passed to us
+    let body = _.pick(req.body, ['text', 'completed']);
+
+    if(!ObjectID.isValid(id)){
+        return res.status(404).send();
+    }
+// check if todo is completed
+    if(_.isBoolean(body.completed) && body.completed){
+        body.completedAt = new Date().getTime();
+    }else{
+        body.completed = false;
+        body.completedAt = null;
+    }
+// {new: true} update with the new version
+    Todo.findByIdAndUpdate(id, {$set: body}, {new: true}).then((todo)=>{
+        if(!todo){
+            return res.status(404).send();
+        }
+        res.send({todo});
+    }).catch((e)=>{
         res.status(400).send();
     });
 });
