@@ -101,6 +101,23 @@ app.patch('/todos/:id', (req, res) => {
     });
 });
 
+// user sign up method. 
+app.post('/users', (req, res) => {
+    let body = _.pick(req.body, ['email', 'password']);
+    let user = new User(body);
+
+    user.save().then(() => {
+        return user.generateAuthToken();
+    }).then((token) => {
+        // we need to send token in http header back to user. 
+        // params are key-value pair, key is the custom header name and value is the token.
+        // x-... to create a custom header. 
+        res.header('x-auth', token).send(user);
+    }).catch((e) => {
+        res.status(400).send(e);
+    })
+});
+
 app.listen(port, () => {
     console.log('server is up on ' + port);
 });
