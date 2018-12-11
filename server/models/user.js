@@ -2,6 +2,7 @@ const validator = require('validator');
 const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 const _ = require('lodash');
+const bcrypt = require('bcryptjs');
 
 let userSchema = new mongoose.Schema({
     email:{
@@ -66,7 +67,22 @@ userSchema.methods.generateAuthToken = function(){
     return user.save().then(() => {
         return token;
     });
-}
+};
+
+// mongoose middleware, meaning before given event.  
+userSchema.pre('save', function(next) {
+    let user = this;
+    if(user.isModified('password')){
+        bcrypt.genSalt(10, (err, salt) =>{
+            bcrypt.hash(user.password, salt, (err, hash) =>{
+                user.password = hash;
+                next();
+            });
+        });
+    }else{
+        next();
+    }
+});
 
 // allow for defining functions that exist directly on your Model.
 userSchema.statics.findByToken = function (token) {

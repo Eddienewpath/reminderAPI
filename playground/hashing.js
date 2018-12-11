@@ -1,16 +1,36 @@
 const {SHA256} = require('crypto-js');
 const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
 
-let data ={
-    id: 10
-};
+let password = "abc123";
+
+// $2a$10$2c5AYd6pNWJYlZ0DGuiPJu/c4FXoLBolNXKzF9dDlVrD56puY76RK
+// '10' - 10 round, 
+// bcrypt.genSalt(10, (err, salt) => {
+//     bcrypt.hash(password, salt, (err, hash) => {
+//         console.log(hash);
+//     });
+// });
+
+let hashedPassword = '$2a$10$2c5AYd6pNWJYlZ0DGuiPJu/c4FXoLBolNXKzF9dDlVrD56puY76RK';
+
+bcrypt.compare(password, hashedPassword, (err, res) =>{
+    console.log(res); // return true. 
+});
+
+
+
+
+// let data ={
+//     id: 10
+// };
 // takes an object and your secrete
 // return token and send back to user when they signup or login
-let token = jwt.sign(data, '123abc');
-console.log(token);
-// decode the toekn back to our data 
-let decoded = jwt.verify(token, '123abc');
-console.log(decoded);
+// let token = jwt.sign(data, '123abc');
+// console.log(token);
+// // decode the toekn back to our data 
+// let decoded = jwt.verify(token, '123abc');
+// console.log(decoded);
 
 // let msg = 'test out shaw256';
 // // SHA256 returns an obeject, you need to turn it into string first. 
