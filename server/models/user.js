@@ -40,6 +40,9 @@ let userSchema = new mongoose.Schema({
         }
     }]
 });
+
+// Each Schema can define instance and static methods for its model.
+
 // The return value of this method is used in calls to JSON.stringify
 // see doc 
 userSchema.methods.toJSON = function(){
@@ -51,20 +54,45 @@ userSchema.methods.toJSON = function(){
 };
 
 userSchema.methods.generateAuthToken = function(){
-    let user = this;
+    let user = this; // owner of this function is the object who calls it. since this is instance method, the single user document will call it. 
     let access = 'auth';
     let token = jwt.sign({
         _id: user._id.toHexString(),
         access
     }, 'abc123').toString();
 // add access and token data into user token array. 
-    user.token = user.tokens.concat([{access, token}]);
+    user.tokens = user.tokens.concat([{access, token}]);
     //save() returns a promise object
     return user.save().then(() => {
         return token;
     });
 }
+
+// allow for defining functions that exist directly on your Model.
+userSchema.statics.findByToken = function (token) {
+    // this here meaning the User model
+    let User = this;
+    let decoded; // leave it undefined coz jwt.verify() will throw an err if user not found or ..
+
+    try{
+        decoded = jwt.verify(token, 'abc123');
+        // console.log(decoded);
+    }catch(e){
+        return new Promise((resolve, reject)=> {
+            reject();
+        });
+        //promise rejections that are not handled will terminate the Node.js process with a non-zero exit code
+        // return Promise.reject();
+    }
+
+    //return a promise
+    return User.findOne({
+         _id: decoded._id,
+        'tokens.token': token,
+        'tokens.access': 'auth'
+    });
+};
+
 let User = mongoose.model('users', userSchema);
-
-
+//module object has a nested exports object which has a User property.
 module.exports = {User};

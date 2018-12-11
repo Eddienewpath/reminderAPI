@@ -8,6 +8,7 @@ let {mongoose} = require('./db/mongoose');
 let {Todo} = require('./models/todo');
 let {User} = require('./models/user');
 const {ObjectID} = require('mongodb');
+const {authenticate} = require('./middleware/authenticate');
 const port = process.env.PORT;
 
 
@@ -99,6 +100,23 @@ app.patch('/todos/:id', (req, res) => {
     }).catch((e)=>{
         res.status(400).send();
     });
+});
+
+// as the second argument to refer to the authenticate function
+app.get('/users/me', authenticate, (req, res)=>{
+    res.send(req.user);
+    // authenticate: 
+    // let token = req.header('x-auth');
+    // User.findByToken(token).then((user)=>{
+    //     if(!user){
+    //         return Promise.reject();
+    //     }
+        
+    //     res.send(user);
+    //     //The Promise returned by catch() is rejected
+    // }).catch((e) => {
+    //     res.status(401).send();
+    // });
 });
 
 // user sign up method. 
