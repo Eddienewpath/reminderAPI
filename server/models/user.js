@@ -111,17 +111,18 @@ userSchema.statics.findByToken = function (token) {
 
 userSchema.statics.findByCredential = function(email, password){
     let User = this;
-    
+    // ES6 {email: email} -> {email}
     return User.findOne({email}).then((user) => {
         if(!user){
             Promise.reject();
         }
-        // bcrypt does not suport Promise, only support callback 
+        // bcrypt does not suport Promise, does not return an promise
         // call Promise constructor function will allow us to use promise
         return new Promise((resolve, reject) => {
             bcrypt.compare(password, user.password, (err, res) => {
                 // res is a boolean value
                 if(res){
+                    //Returns a promise that is resolved with the given value
                     resolve(user);
                 }else {
                     reject();
