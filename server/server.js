@@ -2,6 +2,7 @@
 let express = require('express');
 let bodyparser = require('body-parser'); // bodyparser will send json to the api server
 const _ = require('lodash');
+const bcrypt = require('bcryptjs');
 // local import
 require('./config/config'); // load in different db for development and test
 let {mongoose} = require('./db/mongoose');
@@ -134,6 +135,18 @@ app.post('/users', (req, res) => {
     }).catch((e) => {
         res.status(400).send(e);
     })
+});
+
+// login 
+app.post('/users/login', (req, res) => {
+    let body = _.pick(req.body, ['email', 'password']);
+    User.findByCredential(body.email, body.password).then((user) => {
+        return user.generateAuthToken().then((token) => {
+            res.header('x-auth', token).send(user);
+        });
+    }).catch((err) => {
+        res.status(400).send();
+    });
 });
 
 app.listen(port, () => {

@@ -109,6 +109,28 @@ userSchema.statics.findByToken = function (token) {
     });
 };
 
+userSchema.statics.findByCredential = function(email, password){
+    let User = this;
+    
+    return User.findOne({email}).then((user) => {
+        if(!user){
+            Promise.reject();
+        }
+        // bcrypt does not suport Promise, only support callback 
+        // call Promise constructor function will allow us to use promise
+        return new Promise((resolve, reject) => {
+            bcrypt.compare(password, user.password, (err, res) => {
+                // res is a boolean value
+                if(res){
+                    resolve(user);
+                }else {
+                    reject();
+                }
+            });
+        });
+    });
+};
+
 let User = mongoose.model('users', userSchema);
 //module object has a nested exports object which has a User property.
 module.exports = {User};
