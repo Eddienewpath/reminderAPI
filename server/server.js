@@ -105,7 +105,7 @@ app.patch('/todos/:id', (req, res) => {
 
 // as the second argument to refer to the authenticate function
 app.get('/users/me', authenticate, (req, res)=>{
-    console.log(res);
+    // console.log(res);
     res.send(req.user);
     // authenticate: 
     // let token = req.header('x-auth');
@@ -121,7 +121,7 @@ app.get('/users/me', authenticate, (req, res)=>{
     // });
 });
 
-//delete user token from user tokens array.
+//delete user token from user tokens array.  logout 
 app.delete('/users/me/token', authenticate, (req, res) => {
     req.user.removeToken(req.token).then(() => {
         res.status(200).send();
