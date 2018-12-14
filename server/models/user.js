@@ -69,6 +69,16 @@ userSchema.methods.generateAuthToken = function(){
     });
 };
 
+userSchema.methods.removeToken = function(token){
+    let user = this;
+    //The $pull operator removes from an existing array all instances of a value or values that match a specified condition.
+    return user.updateOne({
+        $pull : {
+            tokens:{token}
+        }
+    });
+};
+
 // mongoose middleware, meaning before given event.  
 userSchema.pre('save', function(next) {
     let user = this;

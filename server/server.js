@@ -105,6 +105,7 @@ app.patch('/todos/:id', (req, res) => {
 
 // as the second argument to refer to the authenticate function
 app.get('/users/me', authenticate, (req, res)=>{
+    console.log(res);
     res.send(req.user);
     // authenticate: 
     // let token = req.header('x-auth');
@@ -118,6 +119,15 @@ app.get('/users/me', authenticate, (req, res)=>{
     // }).catch((e) => {
     //     res.status(401).send();
     // });
+});
+
+//delete user token from user tokens array.
+app.delete('/users/me/token', authenticate, (req, res) => {
+    req.user.removeToken(req.token).then(() => {
+        res.status(200).send();
+    }, () => {
+        res.status(400).send();
+    });
 });
 
 // user sign up method. 
@@ -149,42 +159,10 @@ app.post('/users/login', (req, res) => {
     });
 });
 
+
 app.listen(port, () => {
     console.log('server is up on ' + port);
 });
 
 
 module.exports = {app};
-
-/********************************* notes ******************************* */
-
-
-// console.log(Todo); 
-// let newTodo = new Todo({
-//     text: 'cook rice',
-// });
-
-// newTodo.save().then((doc)=>{
-//     console.log('save todo', doc)
-// }, (err)=> {
-//     console.log('unable to todo')
-// });
-
-// let newerTodo = new Todo({
-//     text: 'eat dinner   ',
-//     completed: true,
-//     completedAt: 123
-// });
-
-// newerTodo.save();
-
-
-// let newUser = new Users({
-//     email: '  '
-// });
-
-// newUser.save().then((res)=>{
-//     console.log('save user', res)
-// }, (err) => {
-//     console.log('unable to connect to User')
-// });
