@@ -60,7 +60,7 @@ userSchema.methods.generateAuthToken = function(){
     let token = jwt.sign({
         _id: user._id.toHexString(),
         access
-    }, 'abc123').toString();
+    }, process.env.JWT_SECRET).toString();
 // add access and token data into user token array. 
     user.tokens = user.tokens.concat([{access, token}]);
     //save() returns a promise object
@@ -101,7 +101,7 @@ userSchema.statics.findByToken = function (token) {
     let decoded; // leave it undefined coz jwt.verify() will throw an err if user not found or ..
 
     try{
-        decoded = jwt.verify(token, 'abc123');
+        decoded = jwt.verify(token, process.env.JWT_SECRET);
         // console.log(decoded);
     }catch(e){
         return new Promise((resolve, reject)=> {

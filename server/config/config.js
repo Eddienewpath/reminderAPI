@@ -8,13 +8,28 @@
 
 let env = process.env.NODE_ENV || 'development';
 
-if(env === 'development'){
-    process.env.PORT = 3000;
-    // if production, heroku will provide URI 
-    process.env.MONGODB_URI = 'mongodb://localhost:27017/TodoApp';
-}else if (env === 'test'){
-    process.env.PORT = 3000;
-    // this will create a new database
-    process.env.MONGODB_URI = 'mongodb://localhost:27017/TodoAppTest';
+// if(env === 'development'){
+//     process.env.PORT = 3000;
+//     // if production, heroku will provide URI 
+//     process.env.MONGODB_URI = 'mongodb://localhost:27017/TodoApp';
+// }else if (env === 'test'){
+//     process.env.PORT = 3000;
+//     // this will create a new database
+//     process.env.MONGODB_URI = 'mongodb://localhost:27017/TodoAppTest';
+// }
+
+// we load in config.json and igonre it in the repo to keep some of our info safe such jwt secret
+if(env === 'test' || env === 'development'){
+    let config = require('./config.json'); // this will turn json into js object
+    let envConfig = config[env];
+
+    Object.keys(envConfig).forEach((key) => {
+        process.env[key] = envConfig[key];
+    });
+
 }
+
+// using terminal to set production env for jwt secret: 
+// enter: heroku config:set key=value  
+// other command see command line help. 
 
