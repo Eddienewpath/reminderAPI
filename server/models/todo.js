@@ -21,6 +21,12 @@ let Todo = mongoose.model('Todo', {
     completedAt:{
         type: Number,
         default: null
+    },
+    // associate with a user using object id 
+    _creator: {
+        // Schema is a namespace , see doc for detail
+        type: mongoose.Schema.Types.ObjectId,
+        required: true
     }
 });
 
