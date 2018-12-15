@@ -33,3 +33,15 @@ if(env === 'test' || env === 'development'){
 // enter: heroku config:set key=value  
 // other command see command line help. 
 
+// mongodb uri explained & setup for Robo 
+// mongodb://heroku_2hxltslh:kf64qflm5qalkq2qdcu93vuplv@ds225624.mlab.com:25624/heroku_2hxltslh 
+/*
+everything between //....: is user name
+between :....@ is password 
+@....: is the address
+:..../ is port number
+:... end, is the database
+
+use these information to set up Robo Mongo
+ */
+
