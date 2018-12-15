@@ -33,12 +33,10 @@ app.post('/todos', authenticate, (req, res)=> {
     });
 });
 
-app.get('/todos', authenticate, (req, res) => {
+app.get('/todos', authenticate,(req, res) => {
     // Todo function object contains a query property find method. 
     // then() method returns a promise 
-    Todo.find({
-        _creator: req.user._id
-    }).then((todos) => {
+    Todo.find({_creator: req.user._id}).then((todos) => {
         res.send({todos});
     }, (e) => {
         res.status(400).send(e);
