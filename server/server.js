@@ -62,19 +62,36 @@ app.get('/todos/:id', authenticate, (req, res) => {
 
 // .remove({}) this will remove all documents     
 // .findByIdAndRemove() will remove and return removed results. 
-app.delete('/todos/:id', authenticate, (req, res) => {
+// app.delete('/todos/:id', authenticate, (req, res) => {
+//     let id = req.params.id;
+//     if(!ObjectID.isValid(id)){
+//        return res.status(404).send();
+//     }
+//     Todo.findOneAndRemove({_id: id, _creator: req.user._id}).then((todo) => {
+//         if(!todo){
+//            return res.status(404).send();
+//         }
+//         res.send({todo});
+//     }).catch((err) => {
+//         res.status(400).send();
+//     });
+// });
+
+// async/await
+app.delete('/todos/:id', authenticate, async (req, res) => {
     let id = req.params.id;
     if(!ObjectID.isValid(id)){
        return res.status(404).send();
     }
-    Todo.findOneAndRemove({_id: id, _creator: req.user._id}).then((todo) => {
+    try{
+        const todo = await Todo.findOneAndRemove({_id: id, _creator: req.user._id});
         if(!todo){
-           return res.status(404).send();
+            return res.status(404).send();
         }
-        res.send({todo});
-    }).catch((err) => {
+         res.send({todo});
+    }catch(e){
         res.status(400).send();
-    });
+    }
 });
 
 app.patch('/todos/:id', authenticate, (req, res) => {
@@ -112,42 +129,80 @@ app.get('/users/me', authenticate, (req, res)=>{
 });
 
 //delete user token from user tokens array.  logout 
-app.delete('/users/me/token', authenticate, (req, res) => {
-    req.user.removeToken(req.token).then(() => {
+// app.delete('/users/me/token', authenticate, (req, res) => {
+//     req.user.removeToken(req.token).then(() => {
+//         res.status(200).send();
+//     }, () => {
+//         res.status(400).send();
+//     });
+// });
+
+// original way can be too many nesting or cannot access the previous chain function states at the latter chain. 
+//using async/await to replace promise nesting. 
+app.delete('/users/me/token', authenticate, async (req, res) => {
+    try{
+        await req.user.removeToken(req.token); // await can throw err if the err occurs. 
         res.status(200).send();
-    }, () => {
+    }catch(e){
         res.status(400).send();
-    });
+    }
 });
 
 // user sign up method. 
-app.post('/users', (req, res) => {
+// app.post('/users', (req, res) => {
+//     let body = _.pick(req.body, ['email', 'password']);
+//     let user = new User(body);
+
+//     user.save().then(() => {
+//         return user.generateAuthToken();
+//     }).then((token) => {
+//         // we need to send token in http header back to user. 
+//         // params are key-value pair, key is the custom header name and value is the token.
+//         // x-... to create a custom header. 
+//         res.header('x-auth', token).send(user);
+//     }).catch((e) => {
+//         res.status(400).send(e);
+//     })
+// });
+
+//async/await
+
+app.post('/users', async (req, res) => {
     let body = _.pick(req.body, ['email', 'password']);
     let user = new User(body);
-
-    user.save().then(() => {
-        return user.generateAuthToken();
-    }).then((token) => {
-        // we need to send token in http header back to user. 
-        // params are key-value pair, key is the custom header name and value is the token.
-        // x-... to create a custom header. 
-        res.header('x-auth', token).send(user);
-    }).catch((e) => {
+    try{
+       await user.save();
+       const token = await user.generateAuthToken();
+       res.header('x-auth', token).send(user);
+    }catch (e) {
         res.status(400).send(e);
-    })
+    }
 });
 
 // login 
-app.post('/users/login', (req, res) => {
+// app.post('/users/login', (req, res) => {
+//     let body = _.pick(req.body, ['email', 'password']);
+//     User.findByCredential(body.email, body.password).then((user) => {
+//         return user.generateAuthToken().then((token) => {
+//             res.header('x-auth', token).send(user);
+//         });
+//     }).catch((err) => {
+//         res.status(400).send();
+//     });
+// });
+
+// async/await update 
+app.post('/users/login', async (req, res) => {
     let body = _.pick(req.body, ['email', 'password']);
-    User.findByCredential(body.email, body.password).then((user) => {
-        return user.generateAuthToken().then((token) => {
-            res.header('x-auth', token).send(user);
-        });
-    }).catch((err) => {
+    try{
+        const user = await User.findByCredential(body.email, body.password);
+        const token = await user.generateAuthToken();
+        res.header('x-auth', token).send(user);
+    }catch(e){
         res.status(400).send();
-    });
+    };
 });
+
 
 
 app.listen(port, () => {
