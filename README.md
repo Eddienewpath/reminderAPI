@@ -1,4 +1,4 @@
-This is a personal project for learning topics such as 
+
     REST api, 
     Node js,
     Express js,
@@ -10,5 +10,5 @@ This is a personal project for learning topics such as
     expect,
     nodemon,
     JSON
-It covers general tools and logic of Nodejs backend dev. 
+
 
